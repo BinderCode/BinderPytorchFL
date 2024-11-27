@@ -230,18 +230,14 @@ def get_volume_serial_number(path):#获取卷号--改
     return volume_info.st_dev+volume_info.st_ino   #二者相加防止克隆，防止移动文件夹  
 
 def load_checkpoint():  #检查是否断电
-    files = [f for f in os.listdir('/host/') if f.startswith('F') and f.endswith('_PM')]  #SGX内要改路径
-    print("Fi_files==",files)
+    files = [f for f in os.listdir('/host/TTP/') if f.startswith('F') and f.endswith('_PM')]  #SGX内要改路径
     if not files:
         return 0, None, None  # 没有找到 Fi_PM 文件，返回轮次为 0
     latest_file = sorted(files, key=lambda x: int(x[1:].split('_')[0]), reverse=True)[0]
     global_round = int(latest_file[1:].split('_')[0]) -1 #获取轮次
-    PM_server = torch.load(os.path.join('/host/', latest_file))     #SGX内要改路径
+    PM_server = torch.load(os.path.join('/host/TTP/', latest_file))     #SGX内要改路径
     PM_server = decrypt_file(PM_server, key)
-    print('PM_server=',PM_server)
-
     file_path = PM_server['file_path']  #能读出来
-    print('file_path=',file_path)
     fi_files = [f for f in os.listdir(file_path) if f.startswith('F')]
     if not fi_files:
         return 0, None, None  # 没有找到 Fi 文件，返回轮次为 0
